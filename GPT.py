@@ -7,6 +7,7 @@ from pygame import mixer
 from tempfile import TemporaryFile
 from dotenv.main import load_dotenv
 import os
+import keyboard
 
 load_dotenv()
 openai.api_key = os.environ['OPENAI_KEY']
@@ -47,38 +48,40 @@ def speak_text(text):
 
 def main():
     while True:
-        print("Say 'Genius' to start recording your question...")
-        with sr.Microphone(device_index = 2) as source:
-            recognizer = sr.Recognizer()
-            recognizer.energy_threshold = 200000
-            audio = recognizer.listen(source)
-            try:
-                transcription = recognizer.recognize_google("input.wav", language='es-MX')
-                if 'navi' in transcription.lower():
-                    
-                    filename = "input.wav"
-                    print("Say your question...")
-                    speak_text("Cual es tu pregunta?")                    
-                    with sr.Microphone() as source:
-                        source.pause_threshold = 1
-                        audio = recognizer.listen(source, phrase_time_limit=None, timeout=None)
-                        with open(filename, "wb") as f:
-                            f.write(audio.get_wav_data())
-                    
-                    text = transcribe_audio_to_text(filename)
-                    if text:
-                        print(f"You said: {text}")
+        if keyboard.read_key() == "}":
+            print("Say 'Genius' to start recording your question...")
+            with sr.Microphone(device_index = 1) as source:
+                recognizer = sr.Recognizer()
+                recognizer.energy_threshold = 200000
+                audio = recognizer.listen(source)
+                with open("input.wav", "wb") as f:
+                    f.write(audio.get_wav_data())
+                try:
+                    transcription = recognizer.recognize_google(audio, language='es-MX')
+                    if 'navi' in transcription.lower():
+                        
+                        filename = "input.wav"
+                        print("Say your question...")
+                        speak_text("Cual es tu pregunta?")                    
+                        with sr.Microphone() as source:
+                            source.pause_threshold = 1
+                            audio = recognizer.listen(source, phrase_time_limit=None, timeout=None)
+                            with open(filename, "wb") as f:
+                                f.write(audio.get_wav_data())
+                        
+                        text = transcribe_audio_to_text(filename)
+                        if text:
+                            print(f"You said: {text}")
+                            #response = generate_response(text)
+                            response = "Entiendo"
+                            print(f"GPT-3 says: {response}")
 
-                        #response = generate_response(text)
-                        response = "Entiendo"
-                        print(f"GPT-3 says: {response}")
+                            speak_text(response)
+                    else:
+                        print(transcription)
 
-                        speak_text(response)
-                else:
-                    print(transcription)
-
-            except Exception as e:
-                print("An error occurred: {}".format(e))
+                except Exception as e:
+                    print("An error occurred: {}".format(e))
 
 if __name__ == "__main__":
     main()
