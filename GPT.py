@@ -48,18 +48,14 @@ def speak_text(text):
 def main():
     while True:
         print("Say 'Genius' to start recording your question...")
-        with sr.Microphone() as source:
+        with sr.Microphone(device_index = 2) as source:
             recognizer = sr.Recognizer()
             recognizer.energy_threshold = 200000
             audio = recognizer.listen(source)
-            print(audio)
             try:
-                transcription = recognizer.recognize_google(audio, language='es-MX')
+                transcription = recognizer.recognize_google("input.wav", language='es-MX')
                 if 'navi' in transcription.lower():
-                    mixer.init()
-                    mixer.music.load("NaviSound.mp3") # escuchar el archivo creado
-                    mixer.music.play()
-                    mixer.get_busy()
+                    
                     filename = "input.wav"
                     print("Say your question...")
                     speak_text("Cual es tu pregunta?")                    
