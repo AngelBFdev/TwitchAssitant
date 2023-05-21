@@ -18,13 +18,14 @@ filename = "input.wav"
 navi_intro = "NaviIntro.mp3"
 navi_outro = "NaviOutro.mp3"
 chat_phrase = "hablemos"
+lang = "es"
 
 def transcribe_audio_to_text(filename):
     recognizer = sr.Recognizer()
     with sr.AudioFile(filename) as source:
         audio = recognizer.record(source)
     try:
-        return recognizer.recognize_google(audio, language='es-MX')
+        return recognizer.recognize_google(audio, language="es-MX")
     except:
         print('Skipping unknown error')
 
@@ -32,10 +33,10 @@ def generate_response(prompt):
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=navi_personality + prompt,
-        max_tokens=500,
+        max_tokens=250,
         n=1,
         stop=None,
-        temperature=0.5,
+        temperature=0.6,
     )
     return response["choices"][0]["text"]
 
@@ -66,10 +67,21 @@ def main():
                     text = transcribe_audio_to_text(filename)
                     print(f"You said: {text}")
                     response = generate_response(text)
-                    play_text(response)
+                    play_text(response, lang)
+
+                elif 'brasileño' in text.lower():
+                    lang = "pt"
+                    response = "Okay"
+                    play_text(response, lang)
+
+                elif 'méxico' in text.lower():
+                    lang = "es"
+                    response = "Okay"
+                    play_text(response, lang)
+
                 else:
                     response = "Entiendo"
-                    play_text(response)
+                    play_text(response, lang)
                 print(f"NAVI said: {response}")
 
             except Exception as e:
