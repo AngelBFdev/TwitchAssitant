@@ -3,12 +3,12 @@ import pyttsx3
 import speech_recognition as sr
 import time
 from gtts import gTTS
-from pygame import mixer
+#from pygame import mixer
 from tempfile import TemporaryFile
 from dotenv.main import load_dotenv
 import os
 import keyboard
-
+from play_sounds import play_music
 load_dotenv()
 openai.api_key = os.environ['OPENAI_KEY']
 
@@ -37,23 +37,24 @@ def generate_response(prompt):
 def speak_text(text):
     #engine.say(text)
     #engine.runAndWait()
-    mixer.init()
+    #mixer.init()
     sf = TemporaryFile()
     
     tts = gTTS(text=text, lang='es')
     tts.write_to_fp(sf)
     sf.seek(0)
-    mixer.music.load(sf) # escuchar el archivo creado
-    mixer.music.play()
+    #mixer.music.load(sf) # escuchar el archivo creado
+    #mixer.music.play()
+    play_music(sf)
 
 def main():
     while True:
         if keyboard.read_key() == "}":
-            print("Say 'Genius' to start recording your question...")
+            play_music("NaviIntro.mp3")
             with sr.Microphone(device_index = 1) as source:
                 recognizer = sr.Recognizer()
                 recognizer.energy_threshold = 200000
-                audio = recognizer.listen(source)
+                audio = recognizer.listen(source, phrase_time_limit=3, timeout=None)
                 with open("input.wav", "wb") as f:
                     f.write(audio.get_wav_data())
                 try:
@@ -65,7 +66,7 @@ def main():
                         speak_text("Cual es tu pregunta?")                    
                         with sr.Microphone() as source:
                             source.pause_threshold = 1
-                            audio = recognizer.listen(source, phrase_time_limit=None, timeout=None)
+                            audio = recognizer.listen(source, phrase_time_limit=10, timeout=1)
                             with open(filename, "wb") as f:
                                 f.write(audio.get_wav_data())
                         

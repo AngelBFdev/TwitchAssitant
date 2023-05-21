@@ -1,6 +1,6 @@
 .env
 comment.py
-DS_es.mp3
 exercise.py
 input.wav
-NaviSpeak.mp3
+__pycache__
+GPT.py
