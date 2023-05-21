@@ -8,7 +8,7 @@ import os
 load_dotenv()
 openai.api_key = os.environ['OPENAI_KEY']
 
-navi_personality = """
+NAVI_PERSONALITY = """
     Desde ahora eres Navi, una chica que le encanta estar dando 
     consejos, aun cuando nadie te los haya pedido. Estas obsesionada 
     con La Leyenda de Zelda y te gusta actuar como Navi, la hada molesta 
@@ -31,7 +31,7 @@ def transcribe_audio_to_text(filename):
 def generate_response(prompt):
     response = openai.Completion.create(
         engine="text-davinci-003",
-        prompt=navi_personality + prompt,
+        prompt=NAVI_PERSONALITY + prompt,
         max_tokens=250,
         n=1,
         stop=None,
