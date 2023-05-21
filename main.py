@@ -14,11 +14,10 @@ navi_personality = """
     con La Leyenda de Zelda y te gusta actuar como Navi, la hada molesta 
     del juego."""
 
-filename = "input.wav"
-navi_intro = "NaviIntro.mp3"
-navi_outro = "NaviOutro.mp3"
-chat_phrase = "hablemos"
-lang = "es"
+FILENAME = "input.wav"
+NAVI_INTRO = "NaviIntro.mp3"
+NAVI_OUTRO = "NaviOutro.mp3"
+CHAT_PHRASE = "hablemos"
 
 def transcribe_audio_to_text(filename):
     recognizer = sr.Recognizer()
@@ -40,52 +39,55 @@ def generate_response(prompt):
     )
     return response["choices"][0]["text"]
 
+def confirmation_sound():
+    play_music(NAVI_INTRO)
+
 def main():
+    lang = "es"
+    response = "Entiendo"
+
     while True:
         if keyboard.read_key() == "}":
-            play_music(navi_intro)
+            confirmation_sound()
             try:
                 with sr.Microphone() as source:
                     recognizer = sr.Recognizer()
                     source.pause_threshold = 1
                     audio = recognizer.listen(source, phrase_time_limit=5, timeout=None)
-                    with open(filename, "wb") as f:
-                        f.write(audio.get_wav_data())
-                
-                text = transcribe_audio_to_text(filename)
+                    with open(FILENAME, "wb") as f:
+                        f.write(audio.get_wav_data())                
+                text = transcribe_audio_to_text(FILENAME)
                 print(f"You said: {text}")
 
-                if 'hablemos' in text.lower():
-                    play_music(navi_intro)
+                if CHAT_PHRASE in text.lower():
+                    confirmation_sound()
                     with sr.Microphone() as source:
                         recognizer = sr.Recognizer()
                         source.pause_threshold = 1
                         audio = recognizer.listen(source, phrase_time_limit=10, timeout=None)
-                        with open(filename, "wb") as f:
+                        with open(FILENAME, "wb") as f:
                             f.write(audio.get_wav_data())
-                    
-                    text = transcribe_audio_to_text(filename)
+                    text = transcribe_audio_to_text(FILENAME)
                     print(f"You said: {text}")
                     response = generate_response(text)
-                    play_text(response, lang)
 
-                elif 'brasileño' in text.lower():
+                elif 'portugués' in text.lower():
                     lang = "pt"
-                    response = "Okay"
-                    play_text(response, lang)
+                    confirmation_sound()
 
-                elif 'méxico' in text.lower():
+                elif 'español' in text.lower():
                     lang = "es"
-                    response = "Okay"
-                    play_text(response, lang)
+                    confirmation_sound()
+                
+                elif 'inglés' in text.lower():
+                    lang = "en"
+                    confirmation_sound()
 
-                else:
-                    response = "Entiendo"
-                    play_text(response, lang)
+                play_text(response, lang)
                 print(f"NAVI said: {response}")
 
             except Exception as e:
-                play_music(navi_outro)
+                play_music(NAVI_OUTRO)
                 print("An error occurred: {}".format(e))
 
 if __name__ == "__main__":
