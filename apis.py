@@ -44,3 +44,11 @@ def bucketlist_response():
         return response.json()["item"]
     else:
         print("Error:", response.status_code, response.text)
+
+def facts_response():
+    api_url = 'https://api.api-ninjas.com/v1/facts?limit=1'
+    response = requests.get(api_url, headers={'X-Api-Key': NINJA_KEY})
+    if response.status_code == requests.codes.ok:
+        return response.json()[0]["fact"]
+    else:
+        print("Error:", response.status_code, response.text)

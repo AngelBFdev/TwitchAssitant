@@ -1,8 +1,8 @@
-import speech_recognition as sr
 from play_sounds import play_music, play_text
 from speech_files import record_microphone, audio_to_text
-from used_apis import openai_response, bing_response, bucketlist_response
+import apis
 import time
+from deep_translator import GoogleTranslator
 
 class Assistant:
     def __init__(
@@ -19,6 +19,7 @@ class Assistant:
         self.outro_sound = outro_sound
         self.personality = personality
         self.speech_file()
+        self.translator = GoogleTranslator(source='en', target='es')
 
     def confirmation_sound(self):
         play_music(self.intro_sound)
@@ -35,16 +36,29 @@ class Assistant:
         return phrase
     
     def openai_response(self, time_limit = "None"):
-        return openai_response(self.listen(time_limit), self.personality)
+        response = apis.openai_response(self.listen(time_limit), self.personality)
+        self.speech_file(response)
+        return response
     
     async def bing_response(self, time_limit = "None"):
-        return await bing_response(self.listen(time_limit))
+        response = await apis.bing_response(self.listen(time_limit))
+        self.speech_file(response)
+        return response
     
     def bucketlist_response(self):
-        return bucketlist_response()
+        response = apis.bucketlist_response()
+        self.speech_file(response)
+        es_response = self.translator.translate(response)
+        return es_response
+    
+    def facts_response(self):
+        response = apis.facts_response()
+        self.speech_file(response)
+        es_response = self.translator.translate(response)
+        return es_response
     
     def speech_file(self, response = ""):
-        with open('assistant_says.txt', "w") as f:
+        with open('assistant_says.txt', "w", encoding='utf-8') as f:
             f.write(response)
         self.said_time = time.time()
         

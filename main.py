@@ -18,6 +18,7 @@ STARTING_LANGUAGE = "es"
 CHAT_PHRASE = "hey"
 BING_PHRASE = "escúchame"
 BUCKET_PHRASE = "deberíamos"
+FACTS_PHRASE = "dime"
 
 async def main():
     Navi = Assistant(
@@ -45,6 +46,9 @@ async def main():
                 
                 elif BUCKET_PHRASE in phrase.lower():
                     response = Navi.bucketlist_response()
+
+                elif FACTS_PHRASE in phrase.lower():
+                    response = Navi.facts_response()
 
                 elif BING_PHRASE in phrase.lower():
                     response = await Navi.bing_response(10)
