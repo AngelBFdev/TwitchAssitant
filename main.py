@@ -4,6 +4,9 @@ import speech_recognition as sr
 import openai
 from dotenv.main import load_dotenv
 import os
+import asyncio
+from EdgeGPT import Chatbot, ConversationStyle
+import re
 
 load_dotenv()
 openai.api_key = os.environ['OPENAI_KEY']
@@ -18,8 +21,9 @@ FILENAME = "input.wav"
 NAVI_INTRO = "NaviIntro.mp3"
 NAVI_OUTRO = "NaviOutro.mp3"
 CHAT_PHRASE = "hablemos"
+BING_PHRASE = "hey"
 
-def transcribe_audio_to_text(filename):
+def audio_to_text(filename):
     recognizer = sr.Recognizer()
     with sr.AudioFile(filename) as source:
         audio = recognizer.record(source)
@@ -27,6 +31,14 @@ def transcribe_audio_to_text(filename):
         return recognizer.recognize_google(audio, language="es-MX")
     except:
         print('Skipping unknown error')
+
+def record_microphone(time_limit = "None"):
+    with sr.Microphone() as source:
+        recognizer = sr.Recognizer()
+        source.pause_threshold = 1
+        audio = recognizer.listen(source, phrase_time_limit=time_limit, timeout=None)
+        with open(FILENAME, "wb") as f:
+            f.write(audio.get_wav_data())
 
 def generate_response(prompt):
     response = openai.Completion.create(
@@ -42,46 +54,44 @@ def generate_response(prompt):
 def confirmation_sound():
     play_music(NAVI_INTRO)
 
-def main():
+async def main():
     lang = "es"
-    response = "Entiendo"
-
+    
     while True:
+        response = "Okay"
         if keyboard.read_key() == "}":
             confirmation_sound()
             try:
-                with sr.Microphone() as source:
-                    recognizer = sr.Recognizer()
-                    source.pause_threshold = 1
-                    audio = recognizer.listen(source, phrase_time_limit=5, timeout=None)
-                    with open(FILENAME, "wb") as f:
-                        f.write(audio.get_wav_data())                
-                text = transcribe_audio_to_text(FILENAME)
-                print(f"You said: {text}")
+                record_microphone(5)
+                phrase = audio_to_text(FILENAME)
+                print(f"You said: {phrase}")
 
-                if CHAT_PHRASE in text.lower():
+                if CHAT_PHRASE in phrase.lower():
                     confirmation_sound()
-                    with sr.Microphone() as source:
-                        recognizer = sr.Recognizer()
-                        source.pause_threshold = 1
-                        audio = recognizer.listen(source, phrase_time_limit=10, timeout=None)
-                        with open(FILENAME, "wb") as f:
-                            f.write(audio.get_wav_data())
-                    text = transcribe_audio_to_text(FILENAME)
-                    print(f"You said: {text}")
-                    response = generate_response(text)
+                    record_microphone(10)
+                    phrase = audio_to_text(FILENAME)
+                    print(f"You said: {phrase}")
+                    response = generate_response(phrase)
 
-                elif 'portugués' in text.lower():
+                elif 'portugués' in phrase.lower():
                     lang = "pt"
-                    confirmation_sound()
 
-                elif 'español' in text.lower():
+                elif 'español' in phrase.lower():
                     lang = "es"
-                    confirmation_sound()
                 
-                elif 'inglés' in text.lower():
+                elif 'inglés' in phrase.lower():
                     lang = "en"
-                    confirmation_sound()
+                    
+                elif BING_PHRASE in phrase.lower():
+                    bot = await Chatbot.create()
+                    response = await bot.ask(prompt="", conversation_style=ConversationStyle.creative)
+                    for message in response["item"]["messages"]:
+                        if message["author"] == "bot":
+                            bot_response = message["text"]
+                    response = re.sub('(\[\^\d+\^\])|^.*?Bing. ', '', bot_response)
+                    print("Bot's response:", bot_response)
+                    await bot.close()
+
 
                 play_text(response, lang)
                 print(f"NAVI said: {response}")
@@ -91,4 +101,4 @@ def main():
                 print("An error occurred: {}".format(e))
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
