@@ -1,15 +1,7 @@
 import keyboard
 from play_sounds import play_text
-import openai
-from dotenv.main import load_dotenv
-import os
 import asyncio
-from EdgeGPT import Chatbot, ConversationStyle
-import re
 from assistant import Assistant
-
-load_dotenv()
-openai.api_key = os.environ['OPENAI_KEY']
 
 NAVI_PERSONALITY = """
     De ahora en adelante eres Navi una chica muy distraida que 
@@ -17,13 +9,14 @@ NAVI_PERSONALITY = """
     una manera de agregarlos a la conversación. No ocupas presentarte,
     ya te conozco. Recuerda, TU NO ERES UN PROGRAMA! Tu eres una chica 
     real."""
-
 INPUT_FILE = "input.wav"
 INTRO_SOUND = "NaviIntro.mp3"
 OUTRO_SOUND = "NaviOutro.mp3"
+STARTING_LANGUAGE = "es"
+
 CHAT_PHRASE = "hey"
 BING_PHRASE = "escúchame"
-STARTING_LANGUAGE = "es"
+BUCKET_PHRASE = "deberíamos"
 
 async def main():
     Navi = Assistant(
@@ -40,10 +33,7 @@ async def main():
             try:
                 phrase = Navi.listen(5)
 
-                if CHAT_PHRASE in phrase.lower():
-                    response = Navi.openai_response(10)
-
-                elif 'portugués' in phrase.lower():
+                if 'portugués' in phrase.lower():
                     Navi.lang = "pt"
 
                 elif 'español' in phrase.lower():
@@ -51,9 +41,15 @@ async def main():
                 
                 elif 'inglés' in phrase.lower():
                     Navi.lang = "en"
-                    
+                
+                elif BUCKET_PHRASE in phrase.lower():
+                    response = Navi.bucketlist_response()
+
                 elif BING_PHRASE in phrase.lower():
                     response = await Navi.bing_response(10)
+                
+                elif CHAT_PHRASE in phrase.lower():
+                    response = Navi.openai_response(10)
 
                 print(f"NAVI said: {response}")
                 play_text(response, Navi.lang)

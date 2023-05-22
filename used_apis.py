@@ -1,6 +1,13 @@
 import openai
 from EdgeGPT import Chatbot, ConversationStyle
 import re
+import requests
+from dotenv.main import load_dotenv
+import os
+
+load_dotenv()
+openai.api_key = os.environ['OPENAI_KEY']
+NINJA_KEY = os.environ['NINJA_KEY']
 
 def openai_response(prompt, personality = "You are a helpful assistant."):
     response = openai.ChatCompletion.create(
@@ -29,3 +36,11 @@ async def bing_response(prompt):
     response = re.sub('(\[\^\d+\^\])|^.*?Bing. ', '', bot_response)
     await bot.close()
     return response
+
+def bucketlist_response():
+    api_url = 'https://api.api-ninjas.com/v1/bucketlist'
+    response = requests.get(api_url, headers={'X-Api-Key': NINJA_KEY})
+    if response.status_code == requests.codes.ok:
+        return response.json()["item"]
+    else:
+        print("Error:", response.status_code, response.text)

@@ -1,8 +1,7 @@
 import speech_recognition as sr
 from play_sounds import play_music, play_text
 from speech_files import record_microphone, audio_to_text
-from used_apis import openai_response, bing_response
-import asyncio
+from used_apis import openai_response, bing_response, bucketlist_response
 
 class Assistant:
     def __init__(
@@ -38,3 +37,6 @@ class Assistant:
     
     async def bing_response(self, time_limit = "None"):
         return await bing_response(self.listen(time_limit))
+    
+    def bucketlist_response(self):
+        return bucketlist_response()
