@@ -21,8 +21,8 @@ NAVI_PERSONALITY = """
 INPUT_FILE = "input.wav"
 INTRO_SOUND = "NaviIntro.mp3"
 OUTRO_SOUND = "NaviOutro.mp3"
-CHAT_PHRASE = "hablemos"
-BING_PHRASE = "hey"
+CHAT_PHRASE = "hey"
+BING_PHRASE = "escúchame"
 STARTING_LANGUAGE = "es"
 
 async def main():
@@ -53,14 +53,7 @@ async def main():
                     Navi.lang = "en"
                     
                 elif BING_PHRASE in phrase.lower():
-                    bot = await Chatbot.create()
-                    response = await bot.ask(prompt="", conversation_style=ConversationStyle.creative)
-                    for message in response["item"]["messages"]:
-                        if message["author"] == "bot":
-                            bot_response = message["text"]
-                    response = re.sub('(\[\^\d+\^\])|^.*?Bing. ', '', bot_response)
-                    print("Bot's response:", bot_response)
-                    await bot.close()
+                    response = await Navi.bing_response(10)
 
                 print(f"NAVI said: {response}")
                 play_text(response, Navi.lang)
