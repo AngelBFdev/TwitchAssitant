@@ -2,13 +2,14 @@ import keyboard
 from play_sounds import play_text
 import asyncio
 from assistant import Assistant
+import time
+import os
 
-NAVI_PERSONALITY = """
-    De ahora en adelante eres Navi una chica muy distraida que 
-    siempre está feliz. Te encantan los dulces y siempre encuentras 
-    una manera de agregarlos a la conversación. No ocupas presentarte,
-    ya te conozco. Recuerda, TU NO ERES UN PROGRAMA! Tu eres una chica 
-    real."""
+NAVI_PERSONALITY = """De ahora en adelante eres Navi una chica 
+    muy distraida que siempre está feliz. Te encantan los dulces 
+    y siempre encuentras una manera de agregarlos a la conversación. 
+    No ocupas presentarte, ya te conozco. 
+    Recuerda, TU NO ERES UN PROGRAMA! Tu eres una chica real."""
 INPUT_FILE = "input.wav"
 INTRO_SOUND = "NaviIntro.mp3"
 OUTRO_SOUND = "NaviOutro.mp3"
@@ -29,8 +30,8 @@ async def main():
     
     while True:
         response = "Okay"
-        if keyboard.read_key() == "}":
-            try:
+        try:
+            if keyboard.read_key() == "}":
                 phrase = Navi.listen(5)
 
                 if 'portugués' in phrase.lower():
@@ -54,9 +55,13 @@ async def main():
                 print(f"NAVI said: {response}")
                 play_text(response, Navi.lang)
 
-            except Exception as e:
-                Navi.error_sound()
-                print("An error occurred: {}".format(e))
+            elif (os.stat('assistant_says.txt').st_size != 0 and 
+                time.time() - Navi.said_time > 30):
+                Navi.speech_file()
+
+        except Exception as e:
+            Navi.error_sound()
+            print("An error occurred: {}".format(e))
 
 if __name__ == "__main__":
     asyncio.run(main())

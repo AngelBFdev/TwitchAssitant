@@ -2,6 +2,7 @@ import speech_recognition as sr
 from play_sounds import play_music, play_text
 from speech_files import record_microphone, audio_to_text
 from used_apis import openai_response, bing_response, bucketlist_response
+import time
 
 class Assistant:
     def __init__(
@@ -17,6 +18,7 @@ class Assistant:
         self.intro_sound = intro_sound
         self.outro_sound = outro_sound
         self.personality = personality
+        self.speech_file()
 
     def confirmation_sound(self):
         play_music(self.intro_sound)
@@ -40,3 +42,9 @@ class Assistant:
     
     def bucketlist_response(self):
         return bucketlist_response()
+    
+    def speech_file(self, response = ""):
+        with open('assistant_says.txt', "w") as f:
+            f.write(response)
+        self.said_time = time.time()
+        
