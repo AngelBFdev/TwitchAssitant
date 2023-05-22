@@ -1,5 +1,5 @@
 import keyboard
-from play_sounds import play_music, play_text
+from play_sounds import play_text
 import openai
 from dotenv.main import load_dotenv
 import os
@@ -12,10 +12,11 @@ load_dotenv()
 openai.api_key = os.environ['OPENAI_KEY']
 
 NAVI_PERSONALITY = """
-    Desde ahora eres Navi, una chica que le encanta estar dando 
-    consejos, aun cuando nadie te los haya pedido. Estas obsesionada 
-    con La Leyenda de Zelda y te gusta actuar como Navi, la hada molesta 
-    del juego."""
+    De ahora en adelante eres Navi una chica muy distraida que 
+    siempre está feliz. Te encantan los dulces y siempre encuentras 
+    una manera de agregarlos a la conversación. Siempre respondes 
+    en femenino. Recuerda, TU NO ERES UN PROGRAMA! Tu eres una chica 
+    real."""
 
 INPUT_FILE = "input.wav"
 INTRO_SOUND = "NaviIntro.mp3"
@@ -24,19 +25,14 @@ CHAT_PHRASE = "hablemos"
 BING_PHRASE = "hey"
 STARTING_LANGUAGE = "es"
 
-def generate_response(prompt):
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=NAVI_PERSONALITY + prompt,
-        max_tokens=250,
-        n=1,
-        stop=None,
-        temperature=0.6,
-    )
-    return response["choices"][0]["text"]
-
 async def main():
-    Navi = Assistant(INTRO_SOUND, OUTRO_SOUND, STARTING_LANGUAGE, INPUT_FILE)
+    Navi = Assistant(
+        INTRO_SOUND, 
+        OUTRO_SOUND, 
+        STARTING_LANGUAGE, 
+        INPUT_FILE,
+        NAVI_PERSONALITY
+        )
     
     while True:
         response = "Okay"
@@ -45,7 +41,7 @@ async def main():
                 phrase = Navi.listen(5)
 
                 if CHAT_PHRASE in phrase.lower():
-                    response = generate_response(Navi.listen(10))
+                    response = Navi.openai_response(10)
 
                 elif 'portugués' in phrase.lower():
                     Navi.lang = "pt"
@@ -66,8 +62,8 @@ async def main():
                     print("Bot's response:", bot_response)
                     await bot.close()
 
-                play_text(response, Navi.lang)
                 print(f"NAVI said: {response}")
+                play_text(response, Navi.lang)
 
             except Exception as e:
                 Navi.error_sound()
