@@ -52,3 +52,19 @@ def facts_response():
         return response.json()[0]["fact"]
     else:
         print("Error:", response.status_code, response.text)
+
+def joke_response():
+    api_url = 'https://api.api-ninjas.com/v1/jokes?limit=1'
+    response = requests.get(api_url, headers={'X-Api-Key': NINJA_KEY})
+    if response.status_code == requests.codes.ok:
+        return response.json()[0]["joke"]
+    else:
+        print("Error:", response.status_code, response.text)
+
+def quote_response(category):
+    api_url = 'https://api.api-ninjas.com/v1/quotes?category={}'.format(category)
+    response = requests.get(api_url, headers={'X-Api-Key': NINJA_KEY})
+    if response.status_code == requests.codes.ok:
+        return response.json()[0]["quote"]
+    else:
+        print("Error:", response.status_code, response.text)

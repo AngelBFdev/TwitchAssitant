@@ -17,6 +17,8 @@ CHAT_PHRASE = "hey"
 BING_PHRASE = "escúchame"
 BUCKET_PHRASE = "deberíamos"
 FACTS_PHRASE = "dime"
+QUOTES_PHRASE = "cita"
+JOKES_PHRASE = "chiste"
 
 def personality_generator(quirk):
     personality = f"{PERSONALITIES['intro']} {PERSONALITIES[quirk]} {PERSONALITIES['reinforment']}"
@@ -54,6 +56,13 @@ async def main():
 
                 elif BUCKET_PHRASE in phrase.lower():
                     response = Navi.bucketlist_response()
+
+                elif QUOTES_PHRASE in phrase.lower():
+                    category = phrase.split()[-1]
+                    response = Navi.quote_response(category)
+
+                elif JOKES_PHRASE in phrase.lower():
+                    response = Navi.joke_response()
 
                 elif FACTS_PHRASE in phrase.lower():
                     response = Navi.facts_response()

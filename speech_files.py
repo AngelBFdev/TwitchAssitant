@@ -1,4 +1,5 @@
 import speech_recognition as sr
+from deep_translator import GoogleTranslator
 
 def record_microphone(filename, time_limit = "None"):
     with sr.Microphone() as source:

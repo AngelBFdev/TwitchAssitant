@@ -18,7 +18,10 @@ class Assistant:
         self.outro_sound = outro_sound
         self.personality = personality
         self.speech_file()
-        self.translator = GoogleTranslator(source='en', target='es')
+
+    def translate_text(self, phrase, og_lang='en', dest_lang='es'):
+        translator = GoogleTranslator(source=og_lang, target=dest_lang)
+        return translator.translate(phrase)
 
     def confirmation_sound(self):
         play_music(self.intro_sound)
@@ -47,13 +50,26 @@ class Assistant:
     def bucketlist_response(self):
         response = apis.bucketlist_response()
         self.speech_file(response)
-        es_response = self.translator.translate(response)
+        es_response = self.translate_text(response)
         return es_response
 
     def facts_response(self):
         response = apis.facts_response()
         self.speech_file(response)
-        es_response = self.translator.translate(response)
+        es_response = self.translate_text(response)
+        return es_response
+
+    def joke_response(self):
+        response = apis.joke_response()
+        self.speech_file(response)
+        es_response = self.translate_text(response)
+        return es_response
+
+    def quote_response(self, category):
+        en_category = self.translate_text(category,'es','en')
+        response = apis.quote_response(en_category)
+        self.speech_file(response)
+        es_response = self.translate_text(response)
         return es_response
 
     def speech_file(self, response = ""):
