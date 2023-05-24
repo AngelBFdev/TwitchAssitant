@@ -20,8 +20,8 @@ FACTS_PHRASE = "dime"
 QUOTES_PHRASE = "cita"
 JOKES_PHRASE = "chiste"
 
-def personality_generator(quirk):
-    personality = f"{PERSONALITIES['intro']} {PERSONALITIES[quirk]} {PERSONALITIES['reinforment']}"
+def personality_generator(description):
+    personality = f"{PERSONALITIES['intro']} {PERSONALITIES[description]} {PERSONALITIES['reinforment']}"
     return personality
 
 async def main():
