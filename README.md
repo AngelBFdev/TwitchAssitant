@@ -19,7 +19,9 @@ Since the Bing API is not official, you better follow their instructions: [EdgeG
 
 ## Usage
 
-At the top of the main file are the key words in order to make the program answer
+If you want to use my assistant just share that I'm the creator of the code.
+
+At the top of the main file are the key words in order to make the program answer:
 ```python
 CHAT_PHRASE = "hey"
 BING_PHRASE = "escúchame"
@@ -29,7 +31,14 @@ QUOTES_PHRASE = "cita"
 JOKES_PHRASE = "chiste"
 ```
 
-In addition, there is also a command to change between the two personalities that, at the moment, this project has
+In addition, there is also a command to change between the two personalities that, at the moment, this project has, but you will have to look for it in the code since I might just play with those words a lot.
+
+To run the program, just open your terminal and run main with:
+```bash
+python3 main.py
+```
+
+Then press "}" to start give the key work to your assistant
 
 ## Contributing
 
