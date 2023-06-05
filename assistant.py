@@ -67,6 +67,7 @@ class Assistant:
 
     def quote_response(self, category):
         en_category = self.translate_text(category,'es','en')
+        print(en_category)
         response = apis.quote_response(en_category)
         self.speech_file(response)
         es_response = self.translate_text(response)

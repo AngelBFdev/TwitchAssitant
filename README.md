@@ -38,7 +38,7 @@ To run the program, just open your terminal and run main with:
 python3 main.py
 ```
 
-Then press "}" to start give the key work to your assistant
+Then press "}" to start and give the key work to your assistant
 
 ## Contributing
 

@@ -20,8 +20,8 @@ FACTS_PHRASE = "dime"
 QUOTES_PHRASE = "cita"
 JOKES_PHRASE = "chiste"
 
-def personality_generator(description):
-    personality = f"{PERSONALITIES['intro']} {PERSONALITIES[description]} {PERSONALITIES['reinforment']}"
+def personality_generator(mood, quirk):
+    personality = f"{PERSONALITIES['intro']} {PERSONALITIES['mood'][mood]} {PERSONALITIES['quirk'][quirk]} {PERSONALITIES['reinforment']}"
     return personality
 
 async def main():
@@ -30,7 +30,7 @@ async def main():
         OUTRO_SOUND,
         STARTING_LANGUAGE,
         INPUT_FILE,
-        personality_generator('candy')
+        personality_generator('happy','desu')
         )
 
     while True:
@@ -50,9 +50,24 @@ async def main():
 
                 elif 'personalidad' in phrase.lower():
                     if 'triste' in phrase.lower():
-                        Navi.personality = personality_generator('sad')
-                    else:
-                        Navi.personality = personality_generator('candy')
+                        mood = 'sad'
+                    elif 'alegre' in phrase.lower():
+                        mood = 'happy'
+                    elif 'tímida' in phrase.lower():
+                        mood = 'shy'
+                    elif 'agresiva' in phrase.lower():
+                        mood = 'aggressive'
+
+                    if 'dulces' in phrase.lower():
+                        quirk = 'candy'
+                    elif 'anime' in phrase.lower():
+                        quirk = 'desu'
+                    elif 'cristo' in phrase.lower():
+                        quirk = 'crist'
+                    elif 'rol' in phrase.lower():
+                        quirk = 'rol'
+
+                    Navi.personality = personality_generator(mood,quirk)
 
                 elif BUCKET_PHRASE in phrase.lower():
                     response = Navi.bucketlist_response()
@@ -68,16 +83,16 @@ async def main():
                     response = Navi.facts_response()
 
                 elif BING_PHRASE in phrase.lower():
-                    response = await Navi.bing_response(10)
+                    response = await Navi.bing_response(9)
 
                 elif CHAT_PHRASE in phrase.lower():
-                    response = Navi.openai_response(10)
+                    response = Navi.openai_response(9)
 
                 print(f"NAVI said: {response}")
                 play_text(response, Navi.lang)
 
             elif (os.stat('assistant_says.txt').st_size != 0 and
-                time.time() - Navi.said_time > 30) or keyboard.read_key() == "{":
+                time.time() - Navi.said_time > 15) or keyboard.read_key() == "{":
                 Navi.speech_file()
 
         except Exception as e:
