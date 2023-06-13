@@ -91,6 +91,11 @@ async def main():
                 print(f"NAVI said: {response}")
                 play_text(response, Navi.lang)
 
+            elif keyboard.read_key() == "+":
+                response = Navi.openai_response(9)
+                print(f"NAVI said: {response}")
+                play_text(response, Navi.lang)
+
             elif (os.stat('assistant_says.txt').st_size != 0 and
                 time.time() - Navi.said_time > 15) or keyboard.read_key() == "{":
                 Navi.speech_file()
