@@ -9,15 +9,20 @@ load_dotenv()
 openai.api_key = os.environ['OPENAI_KEY']
 NINJA_KEY = os.environ['NINJA_KEY']
 
-def openai_response(prompt, personality = "You are a helpful assistant."):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
+def openai_response(prompt, personality = "You are a helpful assistant.", memory=False):
+    if memory:
+        messages = prompt
+    else:
+        messages = [
             {"role": "system", "content":
             personality},
             {"role": "user", "content": prompt},
-        ],
-        temperature=0.7,
+        ]
+
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        temperature=0.8,
         max_tokens=250,
         top_p=1,
         frequency_penalty=0,

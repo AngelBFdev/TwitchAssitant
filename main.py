@@ -1,17 +1,7 @@
 import keyboard
-from play_sounds import play_text
+from play_sounds import play_text, play_audio
 import asyncio
 from assistant import Assistant
-import time
-import os
-import json
-
-PERSONALITIES = json.load(open('personalities.json'))
-
-INPUT_FILE = "input.wav"
-INTRO_SOUND = "NaviIntro.mp3"
-OUTRO_SOUND = "NaviOutro.mp3"
-STARTING_LANGUAGE = "es"
 
 CHAT_PHRASE = "hey"
 BING_PHRASE = "escúchame"
@@ -20,35 +10,16 @@ FACTS_PHRASE = "dime"
 QUOTES_PHRASE = "cita"
 JOKES_PHRASE = "chiste"
 
-def personality_generator(mood, quirk):
-    personality = f"{PERSONALITIES['intro']} {PERSONALITIES['mood'][mood]} {PERSONALITIES['quirk'][quirk]} {PERSONALITIES['reinforment']}"
-    return personality
-
 async def main():
-    Navi = Assistant(
-        INTRO_SOUND,
-        OUTRO_SOUND,
-        STARTING_LANGUAGE,
-        INPUT_FILE,
-        personality_generator('happy','desu')
-        )
+    Navi = Assistant()
 
     while True:
         response = "Okay"
         try:
-            if keyboard.read_key() == "}":
+            if keyboard.read_key() == "+":
                 phrase = Navi.listen(5)
 
-                if 'portugués' in phrase.lower():
-                    Navi.lang = "pt"
-
-                elif 'español' in phrase.lower():
-                    Navi.lang = "es"
-
-                elif 'inglés' in phrase.lower():
-                    Navi.lang = "en"
-
-                elif 'personalidad' in phrase.lower():
+                if 'personalidad' in phrase.lower():
                     if 'triste' in phrase.lower():
                         mood = 'sad'
                     elif 'alegre' in phrase.lower():
@@ -67,38 +38,32 @@ async def main():
                     elif 'rol' in phrase.lower():
                         quirk = 'rol'
 
-                    Navi.personality = personality_generator(mood,quirk)
+                    Navi.personality([mood,quirk])
 
                 elif BUCKET_PHRASE in phrase.lower():
-                    response = Navi.bucketlist_response()
+                    Navi.bucketlist_response()
 
                 elif QUOTES_PHRASE in phrase.lower():
                     category = phrase.split()[-1]
-                    response = Navi.quote_response(category)
+                    Navi.quote_response(category)
 
                 elif JOKES_PHRASE in phrase.lower():
-                    response = Navi.joke_response()
+                    Navi.joke_response()
 
                 elif FACTS_PHRASE in phrase.lower():
-                    response = Navi.facts_response()
+                    Navi.facts_response()
 
                 elif BING_PHRASE in phrase.lower():
-                    response = await Navi.bing_response(9)
+                    await Navi.bing_response(9)
 
                 elif CHAT_PHRASE in phrase.lower():
-                    response = Navi.openai_response(9)
+                    Navi.openai_response(9)
 
-                print(f"NAVI said: {response}")
-                play_text(response, Navi.lang)
+            elif keyboard.read_key() == "}":
+                Navi.openai_response(11)
 
-            elif keyboard.read_key() == "+":
-                response = Navi.openai_response(9)
-                print(f"NAVI said: {response}")
-                play_text(response, Navi.lang)
-
-            elif (os.stat('assistant_says.txt').st_size != 0 and
-                time.time() - Navi.said_time > 15) or keyboard.read_key() == "{":
-                Navi.speech_file()
+            elif keyboard.read_key() == "{":
+                Navi.delete_text()
 
         except Exception as e:
             Navi.error_sound()
