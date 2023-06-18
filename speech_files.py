@@ -17,3 +17,7 @@ def audio_to_text(filename):
         return recognizer.recognize_google(audio, language="es-MX")
     except:
         print('Skipping unknown error')
+
+def write_file(filename, response = ""):
+        with open(filename, "w", encoding='utf-8') as f:
+            f.write(response)
