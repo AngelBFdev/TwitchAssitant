@@ -17,7 +17,9 @@ def play_music(file):
 def play_text(text, lang):
     sf = TemporaryFile()
     tts = gTTS(text=text, lang=lang)
+    print(1)
     tts.write_to_fp(sf)
+    print(2)
     sf.seek(0)
     play_music(sf)
 

@@ -19,7 +19,7 @@ class Assistant:
             self,
             intro_sound = INTRO_SOUND,
             outro_sound = OUTRO_SOUND,
-            arr = ['shy','rol']):
+            arr = ['aggressive','rol']):
         self.intro_sound = intro_sound
         self.outro_sound = outro_sound
         self.personality(arr)
@@ -71,7 +71,7 @@ class Assistant:
 
     def openai_response(self, time_limit = "None", main=True, chat=""):
         memory = self.read_json()
-        message = self.listen(time_limit) if main else chat
+        message = f"Linkeas dice {self.listen(time_limit)}" if main else chat
         memory.append(
             { 'role': 'user', 'content': message }
             )

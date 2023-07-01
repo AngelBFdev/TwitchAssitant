@@ -16,7 +16,7 @@ class Bot(commands.Bot):
         # Initialise our Bot with our access token, prefix and a list of channels to join on boot...
         # prefix can be a callable, which returns a list of strings or a string...
         # initial_channels can also be a callable which returns a list of strings...
-        super().__init__(token=ACCESS_TOKEN, prefix='!', initial_channels=['Linkeas'])
+        super().__init__(token=ACCESS_TOKEN, nick='Navi', prefix='!', initial_channels=['Linkeas'])
         self.Navi = Assistant()
         self.chatters_list = list()
 
@@ -33,33 +33,23 @@ class Bot(commands.Bot):
             return
 
         # Print the contents of our message to console...
-
         if message.author.display_name not in self.chatters_list:
-            greet = f"Saluda a ${message.author.display_name}"
+            greet = f"Hey, {message.author.display_name} a llegado al chat, saludale."
             self.Navi.openai_response(main=False,chat=greet)
             self.chatters_list.append(message.author.display_name)
 
         if "custom-reward-id=617511c4-d233-4395-8f1f-63cae3276af4" in message.raw_data:
             print(message.content)
             print(message.author.display_name)
-            write_file(CHAT_TXT, message.content)
+            chat_message=f"{message.author.display_name} dice {message.content}"
+            write_file(CHAT_TXT, chat_message)
             pytts_play(message.content)
-            self.Navi.openai_response(main=False,chat=message.content)
+            self.Navi.openai_response(main=False,chat=chat_message)
             write_file(CHAT_TXT)
 
         # Since we have commands and are overriding the default `event_message`
         # We must let the bot know we want to handle and invoke our commands...
         await self.handle_commands(message)
-
-    @commands.command()
-    async def hola(self, ctx: commands.Context):
-        # Here we have a command hello, we can invoke our command with our prefix and command name
-        # e.g ?hello
-        # We can also give our commands aliases (different names) to invoke with.
-
-        # Send a hello back!
-        # Sending a reply back to the channel is easy... Below is an example.
-        await ctx.send(f'Hola {ctx.author.name}!')
 
     @commands.command()
     async def clean(self, ctx: commands.Context):
